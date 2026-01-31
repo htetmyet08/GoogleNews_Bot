@@ -2,7 +2,7 @@ import os
 import time
 import logging
 from dotenv import load_dotenv
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from database import Database
 from news_fetcher import NewsFetcher
 from scraper import Scraper
@@ -21,11 +21,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-async def run_sync_wrapper(coro):
-    """Wrapper to run async functions in a sync context."""
-    return await coro
-
-def job():
+async def job():
     """
     Main task to be executed every 30 minutes.
     """
@@ -80,7 +76,7 @@ def job():
             continue
 
         # 5. Send to Telegram
-        success = asyncio.run(bot.send_news(summary, url, title))
+        success = await bot.send_news(summary, url, title)
         
         if success:
             # 6. Mark as processed
@@ -100,14 +96,15 @@ if __name__ == "__main__":
     
     logger.info("Starting Google News Myanmar Bot...")
     
-    # Run once at startup
-    job()
-    
     # Setup scheduler
-    scheduler = BlockingScheduler()
+    scheduler = AsyncIOScheduler()
     scheduler.add_job(job, 'interval', minutes=interval)
+    
+    # Start the first run immediately in the background
+    asyncio.get_event_loop().create_task(job())
     
     try:
         scheduler.start()
+        asyncio.get_event_loop().run_forever()
     except (KeyboardInterrupt, SystemExit):
         logger.info("Bot stopped.")
