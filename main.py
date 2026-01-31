@@ -90,7 +90,7 @@ async def job():
 
     logger.info(f"Cycle completed. Processed {new_items_processed} new articles.")
 
-if __name__ == "__main__":
+async def main():
     load_dotenv()
     interval = int(os.getenv("CHECK_INTERVAL_MINUTES", 30))
     
@@ -100,11 +100,18 @@ if __name__ == "__main__":
     scheduler = AsyncIOScheduler()
     scheduler.add_job(job, 'interval', minutes=interval)
     
-    # Start the first run immediately in the background
-    asyncio.get_event_loop().create_task(job())
+    # Start the first run immediately
+    await job()
     
+    # Start the scheduler
+    scheduler.start()
+    
+    # Keep the script running
+    while True:
+        await asyncio.sleep(1000)
+
+if __name__ == "__main__":
     try:
-        scheduler.start()
-        asyncio.get_event_loop().run_forever()
+        asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
         logger.info("Bot stopped.")
