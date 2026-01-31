@@ -4,7 +4,7 @@ import os
 import logging
 
 class AIProcessor:
-    def __init__(self, project_id, location="asia-southeast1", model_name="gemini-1.5-flash"):
+    def __init__(self, project_id, location="asia-southeast1", model_name="gemini-2.5-flash-lite"):
         vertexai.init(project=project_id, location=location)
         self.model = GenerativeModel(model_name)
         self.logger = logging.getLogger(__name__)
