@@ -1,0 +1,14 @@
+[Unit]
+Description=Google News Myanmar Telegram Bot
+After=network.target
+
+[Service]
+User=your_username
+WorkingDirectory=/path/to/your/GoogleNews_Bot
+Environment=PYTHONPATH=/path/to/your/GoogleNews_Bot
+ExecStart=/path/to/your/venv/bin/python main.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+gnews
+newspaper4k
+google-cloud-aiplatform
+python-telegram-bot
+python-dotenv
+apscheduler
+lxml_html_clean
